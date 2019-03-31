@@ -176,12 +176,12 @@ public class Locator extends Region {
 
 
             //
-            rotate.setPivotX(indicator.getX() - size * 0.2);
-            rotate.setPivotY(indicator.getHeight() * 0.5);
+            rotate.setPivotX(-size * 0.37);
+            rotate.setPivotY(0);
 
             indicator.setWidth(size * 0.1);
             indicator.setHeight(size * 0.01587302);
-            indicator.relocate(size * 0.7, size * 0.5);
+            indicator.relocate(size * 0.87, size * 0.5);
             //
 
             //

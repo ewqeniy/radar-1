@@ -25,7 +25,7 @@ public class Controller extends Region {
     private Rectangle indicator = new Rectangle();
     private Pane pane;
     private Rotate rotate = new Rotate();
-    private              double                   _angle = 300;
+    private              double                   _angle = 250;
     private Paint _backgroundPaint;
     private              Paint                    _foregroundPaint;
     private              Paint                    _indicatorPaint;
@@ -132,12 +132,14 @@ public class Controller extends Region {
             foreground.relocate(size * 0.0212766, size * 0.0212766);
 
             //
-            rotate.setPivotX(indicator.getX() - size * 0.5);
-            rotate.setPivotY(indicator.getHeight() * 0.5);
+//            rotate.setPivotX(indicator.getX() - size * 0.5);
+//            rotate.setPivotY(size * 0.5 - indicator.getHeight()*0.5);
+            rotate.setPivotX(-size * 0.37);
+            rotate.setPivotY(0);
 
             indicator.setWidth(size * 0.1);
             indicator.setHeight(size * 0.01587302);
-            indicator.relocate(size * 0.9, size * 0.5);
+            indicator.relocate(size * 0.87, size * 0.5);
             //
 
             redraw();
