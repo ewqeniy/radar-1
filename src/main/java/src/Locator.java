@@ -14,10 +14,15 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
+import java.util.concurrent.Executors;
+
 
 @DefaultProperty("children")
 public class Locator extends Region {
     private              double                   size;
+    private double radius;
+    private double sin;
+    private double cos;
     private              double                   width;
     private              double                   height;
     private              Circle                   background = new Circle();
@@ -26,28 +31,31 @@ public class Locator extends Region {
     private              Rectangle                indicatorTop = new Rectangle();
     private              Rectangle                indicatorBottom = new Rectangle();
     private              Rectangle                upperRect = new Rectangle();
+    private              Rectangle                target = new Rectangle();
     private              Pane                     pane;
     private              Rotate                   rotate = new Rotate();
     private              Rotate                   rotateTop = new Rotate();
     private              Rotate                   rotateBottom = new Rotate();
-    private              Double                   _angle;
+    private              double                   _angle = 0.0;
     private              Paint                    _backgroundPaint;
     private              Paint                    _foregroundPaint;
     private              Paint                    _indicatorPaint;
     private              InnerShadow              innerShadow;
+//    private Rectangle rect1 = new Rectangle();
+//    private Rectangle rect2 = new Rectangle();
+//    private Rectangle rect3 = new Rectangle();
 
-    private int topAngle;
-    private int bottomAngle;
+    private int topAngle = 55;
+    private int bottomAngle = 360 - topAngle;
+    private double x = 0;
+    private double y = 0;
+    private int signY = 1;
+    private int signX = 1;
 
 
     // ******************** Constructors **************************************
-    public Locator(Double angle) {
+    public Locator() throws Exception {
         getStylesheets().add(Locator.class.getResource("radar.css").toExternalForm());
-
-        _angle = angle;
-        topAngle = 55;
-        bottomAngle = 360 - topAngle;
-
         _backgroundPaint = Color.rgb(32, 32, 32);
         _foregroundPaint = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
                                               new Stop(0.0, Color.rgb(61, 61, 61)),
@@ -57,9 +65,34 @@ public class Locator extends Region {
 
         initGraphics();
         registerListeners();
+
+        Executors.newFixedThreadPool(1).submit(this::startTarget);
     }
 
 
+    // ******************** Target ********************************************
+    private void startTarget() {
+
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < 100; i++) {
+            try {
+                if ( _angle >= 0 && _angle <= 90 ) { signX = -1; signY = -1; }
+                if ( _angle > 90 && _angle <= 180 ) { signX = +1; signY = -1; }
+                if ( _angle > 180 && _angle <= 270 ) { signX = +1; signY = +1; }
+                if ( _angle > 270 && _angle < 360 ) { signX = -1; signY = +1; }
+                redrawTarget();
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     // ******************** Initialization ************************************
     private void initGraphics() {
 
@@ -89,7 +122,18 @@ public class Locator extends Region {
         indicatorBottom.getTransforms().add(rotateBottom);
         indicatorBottom.setMouseTransparent(true);
 
-        pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect);
+        target.setVisible(false);
+
+        pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect, target);
+
+
+        ////////////////////////////////////////////////////////
+//        int w = 10;
+//        rect1 = new Rectangle(w, w);
+//        rect2 = new Rectangle(w, w);
+//        rect3 = new Rectangle(w, w);
+//        pane.getChildren().addAll(rect1, rect2, rect3);
+        ////////////////////////////////////////////////////////
 
         getChildren().setAll(pane);
     }
@@ -112,6 +156,9 @@ public class Locator extends Region {
         width  = getWidth() - getInsets().getLeft() - getInsets().getRight();
         height = getHeight() - getInsets().getTop() - getInsets().getBottom();
         size   = width < height ? width : height;
+        radius = size * 0.5;
+        sin = Math.sin(gradusToRodian(_angle));
+        cos = Math.cos(gradusToRodian(_angle));
 
         if (width > 0 && height > 0) {
             pane.setMaxSize(size, size);
@@ -126,6 +173,7 @@ public class Locator extends Region {
 
             foreground.setRadius(size * 0.4787234);
             foreground.relocate(size * 0.0212766, size * 0.0212766);
+
 
             //
             rotate.setPivotX(indicator.getX() - size * 0.2);
@@ -160,6 +208,39 @@ public class Locator extends Region {
 
             redraw();
         }
+    }
+
+    private double gradusToRodian(double gradus) {
+        return gradus * (3.14 / 180);
+    }
+
+    private void redrawTarget() {
+        target.setVisible(true);
+
+
+        double xStart = radius + radius * cos;
+        double yStart = radius + radius * sin;
+
+        if (x == 0) { x = xStart; }
+        if (y == 0) { y = yStart; }
+
+        System.out.println("1:::::" + x + "     "+ y);
+
+        double oldX = x;
+        if (_angle == 270) {
+            x = oldX;
+            y += 5;
+        } else if (_angle == 90){
+            x = oldX;
+            y -= 5;
+        } else {
+            x += 5 * signX;
+            y = (((x - radius) * (y - radius))/(oldX - radius)) + radius;
+        }
+        target.relocate(x, y);
+
+        target.setWidth(size * 0.03);
+        target.setHeight(size * 0.03);
     }
 
     private void redraw() {
