@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
+import java.util.Random;
 import java.util.concurrent.Executors;
 
 
@@ -45,13 +46,15 @@ public class Locator extends Region {
 //    private Rectangle rect2 = new Rectangle();
 //    private Rectangle rect3 = new Rectangle();
 
-    private int topAngle = 55;
+    private int angleForTarget = 0;
+    private int topAngle = 52;
     private int bottomAngle = 360 - topAngle;
     private double x = 0;
     private double y = 0;
     private int signY = 1;
     private int signX = 1;
 
+    private boolean scTurnOn = false;
 
     // ******************** Constructors **************************************
     public Locator() throws Exception {
@@ -65,34 +68,9 @@ public class Locator extends Region {
 
         initGraphics();
         registerListeners();
-
-        Executors.newFixedThreadPool(1).submit(this::startTarget);
     }
 
 
-    // ******************** Target ********************************************
-    private void startTarget() {
-
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        for (int i = 0; i < 100; i++) {
-            try {
-                if ( _angle >= 0 && _angle <= 90 ) { signX = -1; signY = -1; }
-                if ( _angle > 90 && _angle <= 180 ) { signX = +1; signY = -1; }
-                if ( _angle > 180 && _angle <= 270 ) { signX = +1; signY = +1; }
-                if ( _angle > 270 && _angle < 360 ) { signX = -1; signY = +1; }
-                redrawTarget();
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
     // ******************** Initialization ************************************
     private void initGraphics() {
 
@@ -151,14 +129,28 @@ public class Locator extends Region {
         rotateBottom.setAngle(_angle + bottomAngle);
     }
 
+    public void onKpClicked() {
+        int angle = new Random().nextInt(360);
+        new Target(angle, target);
+    }
+
+    public void onAutoClicked() {
+    }
+
+
+    public void onScClicked() { scTurnOn = true; }
+
+
+    public void onRuClicked() {
+
+    }
+
     // ******************** Resizing ******************************************
     private void resize() {
         width  = getWidth() - getInsets().getLeft() - getInsets().getRight();
         height = getHeight() - getInsets().getTop() - getInsets().getBottom();
         size   = width < height ? width : height;
         radius = size * 0.5;
-        sin = Math.sin(gradusToRodian(_angle));
-        cos = Math.cos(gradusToRodian(_angle));
 
         if (width > 0 && height > 0) {
             pane.setMaxSize(size, size);
@@ -210,39 +202,6 @@ public class Locator extends Region {
         }
     }
 
-    private double gradusToRodian(double gradus) {
-        return gradus * (3.14 / 180);
-    }
-
-    private void redrawTarget() {
-        target.setVisible(true);
-
-
-        double xStart = radius + radius * cos;
-        double yStart = radius + radius * sin;
-
-        if (x == 0) { x = xStart; }
-        if (y == 0) { y = yStart; }
-
-        System.out.println("1:::::" + x + "     "+ y);
-
-        double oldX = x;
-        if (_angle == 270) {
-            x = oldX;
-            y += 5;
-        } else if (_angle == 90){
-            x = oldX;
-            y -= 5;
-        } else {
-            x += 5 * signX;
-            y = (((x - radius) * (y - radius))/(oldX - radius)) + radius;
-        }
-        target.relocate(x, y);
-
-        target.setWidth(size * 0.03);
-        target.setHeight(size * 0.03);
-    }
-
     private void redraw() {
         background.setFill(_backgroundPaint);
         foreground.setFill(_foregroundPaint);
@@ -250,4 +209,85 @@ public class Locator extends Region {
         indicatorTop.setFill(_indicatorPaint);
         indicatorBottom.setFill(_indicatorPaint);
     }
+
+
+
+
+    class Target {
+        int angle = 0;
+        double x = 0;
+        double y = 0;
+        double sin = 0;
+        double cos = 0;
+        int signX = 1;
+        int signY = 1;
+        Rectangle target;
+
+        public Target(int angle, Rectangle target) {
+            this.angle = angle;
+            this.target = target;
+            sin = Math.sin(gradusToRodian(angle));
+            cos = Math.cos(gradusToRodian(angle));
+            Executors.newFixedThreadPool(1).submit(this::startTarget);
+        }
+
+        private void startTarget() {
+
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            for (int i = 0; i < 100; i++) {
+                try {
+                    if ( angle >= 0 && angle <= 90 ) { signX = -1; signY = -1; }
+                    if ( angle > 90 && angle <= 180 ) { signX = +1; signY = -1; }
+                    if ( angle > 180 && angle <= 270 ) { signX = +1; signY = +1; }
+                    if ( angle > 270 && angle < 360 ) { signX = -1; signY = +1; }
+                    redrawTarget();
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private void redrawTarget() {
+
+            target.setVisible(true);
+
+
+            double xStart = radius + radius * cos;
+            double yStart = radius + radius * sin;
+
+            if (x == 0) { x = xStart; }
+            if (y == 0) { y = yStart; }
+
+            System.out.println("1:::::" + x + "     "+ y);
+
+            double oldX = x;
+            if (angle == 270) {
+                x = oldX;
+                y += 5;
+            } else if (angle == 90){
+                x = oldX;
+                y -= 5;
+            } else {
+                x += 5 * signX;
+                y = (((x - radius) * (y - radius))/(oldX - radius)) + radius;
+            }
+            target.relocate(x, y);
+
+            target.setWidth(size * 0.03);
+            target.setHeight(size * 0.03);
+        }
+
+        private double gradusToRodian(double gradus) {
+            return gradus * (3.14 / 180);
+        }
+
+    }
 }
+
