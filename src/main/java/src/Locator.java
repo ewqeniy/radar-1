@@ -15,33 +15,32 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
 import java.util.Random;
-import java.util.concurrent.Executors;
 
 
 @DefaultProperty("children")
 public class Locator extends Region {
-    private              double                   size;
+    private double size;
     private double radius;
     private double sin;
     private double cos;
-    private              double                   width;
-    private              double                   height;
-    private              Circle                   background = new Circle();
-    private              Circle                   foreground = new Circle();
-    private              Rectangle                indicator = new Rectangle();
-    private              Rectangle                indicatorTop = new Rectangle();
-    private              Rectangle                indicatorBottom = new Rectangle();
-    private              Rectangle                upperRect = new Rectangle();
-    private              Rectangle                target = new Rectangle();
-    private              Pane                     pane;
-    private              Rotate                   rotate = new Rotate();
-    private              Rotate                   rotateTop = new Rotate();
-    private              Rotate                   rotateBottom = new Rotate();
-    private              double                   _angle = 0.0;
-    private              Paint                    _backgroundPaint;
-    private              Paint                    _foregroundPaint;
-    private              Paint                    _indicatorPaint;
-    private              InnerShadow              innerShadow;
+    private double width;
+    private double height;
+    private Circle background = new Circle();
+    private Circle foreground = new Circle();
+    private Rectangle indicator = new Rectangle();
+    private Rectangle indicatorTop = new Rectangle();
+    private Rectangle indicatorBottom = new Rectangle();
+    private Rectangle upperRect = new Rectangle();
+    private Rectangle target = new Rectangle();
+    private Pane pane;
+    private Rotate rotate = new Rotate();
+    private Rotate rotateTop = new Rotate();
+    private Rotate rotateBottom = new Rotate();
+    private double _angle = 0.0;
+    private Paint _backgroundPaint;
+    private Paint _foregroundPaint;
+    private Paint _indicatorPaint;
+    private InnerShadow innerShadow;
 //    private Rectangle rect1 = new Rectangle();
 //    private Rectangle rect2 = new Rectangle();
 //    private Rectangle rect3 = new Rectangle();
@@ -61,10 +60,10 @@ public class Locator extends Region {
         getStylesheets().add(Locator.class.getResource("radar.css").toExternalForm());
         _backgroundPaint = Color.rgb(32, 32, 32);
         _foregroundPaint = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                                              new Stop(0.0, Color.rgb(61, 61, 61)),
-                                              new Stop(0.5, Color.rgb(50, 50, 50)),
-                                              new Stop(1.0, Color.rgb(42, 42, 42)));
-        _indicatorPaint  = Color.rgb(159, 159, 159);
+                new Stop(0.0, Color.rgb(61, 61, 61)),
+                new Stop(0.5, Color.rgb(50, 50, 50)),
+                new Stop(1.0, Color.rgb(42, 42, 42)));
+        _indicatorPaint = Color.rgb(159, 159, 159);
 
         initGraphics();
         registerListeners();
@@ -131,14 +130,16 @@ public class Locator extends Region {
 
     public void onKpClicked() {
         int angle = new Random().nextInt(360);
-        new Target(angle, target);
+        new Target(angle, target, radius, size);
     }
 
     public void onAutoClicked() {
     }
 
 
-    public void onScClicked() { scTurnOn = true; }
+    public void onScClicked() {
+        scTurnOn = true;
+    }
 
 
     public void onRuClicked() {
@@ -147,9 +148,9 @@ public class Locator extends Region {
 
     // ******************** Resizing ******************************************
     private void resize() {
-        width  = getWidth() - getInsets().getLeft() - getInsets().getRight();
+        width = getWidth() - getInsets().getLeft() - getInsets().getRight();
         height = getHeight() - getInsets().getTop() - getInsets().getBottom();
-        size   = width < height ? width : height;
+        size = width < height ? width : height;
         radius = size * 0.5;
 
         if (width > 0 && height > 0) {
@@ -209,85 +210,4 @@ public class Locator extends Region {
         indicatorTop.setFill(_indicatorPaint);
         indicatorBottom.setFill(_indicatorPaint);
     }
-
-
-
-
-    class Target {
-        int angle = 0;
-        double x = 0;
-        double y = 0;
-        double sin = 0;
-        double cos = 0;
-        int signX = 1;
-        int signY = 1;
-        Rectangle target;
-
-        public Target(int angle, Rectangle target) {
-            this.angle = angle;
-            this.target = target;
-            sin = Math.sin(gradusToRodian(angle));
-            cos = Math.cos(gradusToRodian(angle));
-            Executors.newFixedThreadPool(1).submit(this::startTarget);
-        }
-
-        private void startTarget() {
-
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            for (int i = 0; i < 100; i++) {
-                try {
-                    if ( angle >= 0 && angle <= 90 ) { signX = -1; signY = -1; }
-                    if ( angle > 90 && angle <= 180 ) { signX = +1; signY = -1; }
-                    if ( angle > 180 && angle <= 270 ) { signX = +1; signY = +1; }
-                    if ( angle > 270 && angle < 360 ) { signX = -1; signY = +1; }
-                    redrawTarget();
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        private void redrawTarget() {
-
-            target.setVisible(true);
-
-
-            double xStart = radius + radius * cos;
-            double yStart = radius + radius * sin;
-
-            if (x == 0) { x = xStart; }
-            if (y == 0) { y = yStart; }
-
-            System.out.println("1:::::" + x + "     "+ y);
-
-            double oldX = x;
-            if (angle == 270) {
-                x = oldX;
-                y += 5;
-            } else if (angle == 90){
-                x = oldX;
-                y -= 5;
-            } else {
-                x += 5 * signX;
-                y = (((x - radius) * (y - radius))/(oldX - radius)) + radius;
-            }
-            target.relocate(x, y);
-
-            target.setWidth(size * 0.03);
-            target.setHeight(size * 0.03);
-        }
-
-        private double gradusToRodian(double gradus) {
-            return gradus * (3.14 / 180);
-        }
-
-    }
 }
-
