@@ -44,7 +44,7 @@ public class Demo extends Application {
         pane.setBackground(new Background(new BackgroundFill(Color.web("#2e2e2e"), CornerRadii.EMPTY, Insets.EMPTY)));
         pane.setPadding(new Insets(30));
 
-        Scene scene = new Scene(pane, 1000, 1000);
+        Scene scene = new Scene(pane, 1300, 1000);
 
         stage.setScene(scene);
         stage.show();
