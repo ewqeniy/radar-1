@@ -14,6 +14,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -21,8 +23,6 @@ import java.util.Random;
 public class Locator extends Region {
     private double size;
     private double radius;
-    private double sin;
-    private double cos;
     private double width;
     private double height;
     private Circle background = new Circle();
@@ -31,7 +31,7 @@ public class Locator extends Region {
     private Rectangle indicatorTop = new Rectangle();
     private Rectangle indicatorBottom = new Rectangle();
     private Rectangle upperRect = new Rectangle();
-    private Rectangle target = new Rectangle();
+    private List<Rectangle> targets = new ArrayList<>();
     private Pane pane;
     private Rotate rotate = new Rotate();
     private Rotate rotateTop = new Rotate();
@@ -41,17 +41,11 @@ public class Locator extends Region {
     private Paint _foregroundPaint;
     private Paint _indicatorPaint;
     private InnerShadow innerShadow;
-//    private Rectangle rect1 = new Rectangle();
-//    private Rectangle rect2 = new Rectangle();
-//    private Rectangle rect3 = new Rectangle();
+    private int currentTargetIdx = 0;
 
-    private int angleForTarget = 0;
+
     private int topAngle = 52;
     private int bottomAngle = 360 - topAngle;
-    private double x = 0;
-    private double y = 0;
-    private int signY = 1;
-    private int signX = 1;
 
     private boolean scTurnOn = false;
 
@@ -64,6 +58,7 @@ public class Locator extends Region {
                 new Stop(0.5, Color.rgb(50, 50, 50)),
                 new Stop(1.0, Color.rgb(42, 42, 42)));
         _indicatorPaint = Color.rgb(159, 159, 159);
+        for (int i = 0; i < 6; i++) { targets.add(new Rectangle()); }
 
         initGraphics();
         registerListeners();
@@ -99,19 +94,8 @@ public class Locator extends Region {
         indicatorBottom.getTransforms().add(rotateBottom);
         indicatorBottom.setMouseTransparent(true);
 
-        target.setVisible(false);
-
-        pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect, target);
-
-
-        ////////////////////////////////////////////////////////
-//        int w = 10;
-//        rect1 = new Rectangle(w, w);
-//        rect2 = new Rectangle(w, w);
-//        rect3 = new Rectangle(w, w);
-//        pane.getChildren().addAll(rect1, rect2, rect3);
-        ////////////////////////////////////////////////////////
-
+        pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect);
+        pane.getChildren().addAll(targets);
         getChildren().setAll(pane);
     }
 
@@ -130,7 +114,7 @@ public class Locator extends Region {
 
     public void onKpClicked() {
         int angle = new Random().nextInt(360);
-        new Target(angle, target, radius, size);
+        new Target(angle, targets.get(currentTargetIdx++), radius, size);
     }
 
     public void onAutoClicked() {
