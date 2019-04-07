@@ -54,12 +54,12 @@ public class Locator extends Region {
     // ******************** Constructors **************************************
     public Locator() throws Exception {
         getStylesheets().add(Locator.class.getResource("radar.css").toExternalForm());
-        _backgroundPaint = Color.rgb(32, 32, 32);
+        _backgroundPaint = Color.rgb(190, 200, 93);
         _foregroundPaint = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0.0, Color.rgb(61, 61, 61)),
-                new Stop(0.5, Color.rgb(50, 50, 50)),
+                new Stop(0.0, Color.rgb(112, 242, 255)),
                 new Stop(1.0, Color.rgb(42, 42, 42)));
-        _indicatorPaint = Color.rgb(159, 159, 159);
+        _indicatorPaint = Color.rgb(15, 114, 0);
         for (int i = 0; i < 6; i++) { targetsRect.add(new Rectangle()); }
 
         initGraphics();
