@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -14,10 +15,13 @@ import javafx.stage.Stage;
 public class Demo extends Application {
     private Locator locatorPanel = new Locator();
     private Controller controllerPanel = new Controller((Double angle) -> locatorPanel.setAngle(angle));
-    private Button kpBtn = new Button("КП");
-    private Button autoBtn = new Button("Авто");
+    private Button kpBtn = new Button();
+    private Label kpLabel = new Label("     КП");
+    private Button autoBtn = new Button();
+    private Label autoLabel = new Label("АВТОНОМНО");
     private Button scBtn = new Button("СЦ");
-    private Button ruBtn = new Button("РУ");
+    private Button ruBtn = new Button();
+    private Label ruLable = new Label("      РУ");
 
 
 
@@ -37,25 +41,53 @@ public class Demo extends Application {
 
     @Override
     public void start(Stage stage) {
+        kpBtn.setPrefSize(50,50);
+        kpBtn.setStyle("-fx-background-color: red;" +
+                "-fx-border-radius: 5;" +
+                "-fx-border-color: black;");
+        autoBtn.setPrefSize(50,50);
+        autoBtn.setStyle("-fx-background-color: blue;" +
+                "-fx-border-radius: 5;" +
+                "-fx-border-color: black;");
+        ruBtn.setPrefSize(50,50);
+        ruBtn.setStyle("-fx-background-color: red;" +
+                "-fx-border-radius: 5;" +
+                "-fx-border-color: black;");
+        kpBtn.setPrefSize(50,50);
+        kpBtn.setStyle("-fx-background-color: red;" +
+                "-fx-border-radius: 5;" +
+                "-fx-border-color: black;");
         BorderPane pane = new BorderPane();
         pane.setCenter(locatorPanel);
         pane.setRight(getRightPane());
 
-        pane.setBackground(new Background(new BackgroundFill(Color.web("#2e2e2e"), CornerRadii.EMPTY, Insets.EMPTY)));
+        pane.setBackground(new Background(new BackgroundFill(Color.web("#BEC85D"), CornerRadii.EMPTY, Insets.EMPTY)));
         pane.setPadding(new Insets(30));
 
         Scene scene = new Scene(pane, 1300, 1000);
 
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 
     private Pane getRightPane() {
         BorderPane.setMargin(kpBtn, new Insets(0, 100, 0, 0));
         BorderPane topPane = new BorderPane();
-        topPane.setLeft(kpBtn); topPane.setRight(autoBtn);
+        BorderPane topLeftPane = new BorderPane();
+        topLeftPane.setTop(kpBtn);
+        topLeftPane.setBottom(kpLabel);
+        BorderPane topRightPane = new BorderPane();
+        topRightPane.setTop(autoBtn);
+        topRightPane.setBottom(autoLabel);
+        topPane.setLeft(topLeftPane); topPane.setRight(topRightPane);
         BorderPane bottomPane = new BorderPane();
-        bottomPane.setLeft(scBtn); bottomPane.setRight(ruBtn);
+        BorderPane bottomLeftPane = new BorderPane();
+        bottomLeftPane.setTop(scBtn);
+        BorderPane bottomRightPane = new BorderPane();
+        bottomRightPane.setBottom(ruLable);
+        bottomRightPane.setTop(ruBtn);
+        bottomPane.setLeft(scBtn); bottomPane.setRight(bottomRightPane);
 
         BorderPane paneForReturn = new BorderPane();
         paneForReturn.setTop(topPane);
