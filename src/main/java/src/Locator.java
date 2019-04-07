@@ -14,46 +14,53 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+
 
 @DefaultProperty("children")
 public class Locator extends Region {
-    private              double                   size;
-    private              double                   width;
-    private              double                   height;
-    private              Circle                   background = new Circle();
-    private              Circle                   foreground = new Circle();
-    private              Rectangle                indicator = new Rectangle();
-    private              Rectangle                indicatorTop = new Rectangle();
-    private              Rectangle                indicatorBottom = new Rectangle();
-    private              Rectangle                upperRect = new Rectangle();
-    private              Pane                     pane;
-    private              Rotate                   rotate = new Rotate();
-    private              Rotate                   rotateTop = new Rotate();
-    private              Rotate                   rotateBottom = new Rotate();
-    private              Double                   _angle;
-    private              Paint                    _backgroundPaint;
-    private              Paint                    _foregroundPaint;
-    private              Paint                    _indicatorPaint;
-    private              InnerShadow              innerShadow;
+    private double size;
+    private double radius;
+    private double width;
+    private double height;
+    private Circle background = new Circle();
+    private Circle foreground = new Circle();
+    private Rectangle indicator = new Rectangle();
+    private Rectangle indicatorTop = new Rectangle();
+    private Rectangle indicatorBottom = new Rectangle();
+    private Rectangle upperRect = new Rectangle();
+    private List<Rectangle> targetsRect = new ArrayList<>();
+    private List<Target> targets = new ArrayList<>();
+    private Pane pane;
+    private Rotate rotate = new Rotate();
+    private Rotate rotateTop = new Rotate();
+    private Rotate rotateBottom = new Rotate();
+    private double _angle = 0.0;
+    private Paint _backgroundPaint;
+    private Paint _foregroundPaint;
+    private Paint _indicatorPaint;
+    private InnerShadow innerShadow;
+    private int currentTargetIdx = 0;
 
-    private int topAngle;
-    private int bottomAngle;
 
+    private int topAngle = 52;
+    private int bottomAngle = 360 - topAngle;
+
+    private boolean scTurnOn = true;
 
     // ******************** Constructors **************************************
-    public Locator(Double angle) {
+    public Locator() throws Exception {
         getStylesheets().add(Locator.class.getResource("radar.css").toExternalForm());
-
-        _angle = angle;
-        topAngle = 55;
-        bottomAngle = 360 - topAngle;
-
         _backgroundPaint = Color.rgb(32, 32, 32);
         _foregroundPaint = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                                              new Stop(0.0, Color.rgb(61, 61, 61)),
-                                              new Stop(0.5, Color.rgb(50, 50, 50)),
-                                              new Stop(1.0, Color.rgb(42, 42, 42)));
-        _indicatorPaint  = Color.rgb(159, 159, 159);
+                new Stop(0.0, Color.rgb(61, 61, 61)),
+                new Stop(0.5, Color.rgb(50, 50, 50)),
+                new Stop(1.0, Color.rgb(42, 42, 42)));
+        _indicatorPaint = Color.rgb(159, 159, 159);
+        for (int i = 0; i < 6; i++) { targetsRect.add(new Rectangle()); }
 
         initGraphics();
         registerListeners();
@@ -90,7 +97,7 @@ public class Locator extends Region {
         indicatorBottom.setMouseTransparent(true);
 
         pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect);
-
+        pane.getChildren().addAll(targetsRect);
         getChildren().setAll(pane);
     }
 
@@ -107,11 +114,61 @@ public class Locator extends Region {
         rotateBottom.setAngle(_angle + bottomAngle);
     }
 
+    public void onKpClicked() {
+        int angle = new Random().nextInt(360);
+        targets.add(new Target(angle, targetsRect.get(currentTargetIdx++), radius, size));
+    }
+
+    public void onAutoClicked() {
+
+            if (scTurnOn) {
+                Target target = targets.get(0);
+                Executors.newFixedThreadPool(1).submit(() -> {
+                    try {
+                        if (_angle - 30 <= target.angle && target.angle <= _angle + 30) {
+                            if (target.angle >= _angle - 30 && target.angle <= _angle) {
+                                double diffAngle = Math.abs(_angle - target.angle);
+                                for (int i = 0; i < 10; i++) {
+                                    Thread.sleep(400);
+                                    setAngle(_angle - diffAngle / 10);
+                                }
+                                setAngle(target.angle);
+                            }
+                            if (target.angle <= _angle + 30 && target.angle >= _angle) {
+                                double diffAngle = Math.abs(target.angle - _angle);
+                                for (int i = 0; i < 10; i++) {
+                                    Thread.sleep(400);
+                                    setAngle(_angle + diffAngle / 10);
+                                }
+                                setAngle(target.angle);
+                            }
+                        }
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            }
+
+    }
+
+
+    public void onScClicked() {
+        scTurnOn = true;
+    }
+
+
+    public void onRuClicked() {
+
+    }
+
     // ******************** Resizing ******************************************
     private void resize() {
-        width  = getWidth() - getInsets().getLeft() - getInsets().getRight();
+        width = getWidth() - getInsets().getLeft() - getInsets().getRight();
         height = getHeight() - getInsets().getTop() - getInsets().getBottom();
-        size   = width < height ? width : height;
+        size = width < height ? width : height;
+        radius = size * 0.5;
+
+        System.out.println("============ RESIZE ============");
 
         if (width > 0 && height > 0) {
             pane.setMaxSize(size, size);
@@ -127,13 +184,14 @@ public class Locator extends Region {
             foreground.setRadius(size * 0.4787234);
             foreground.relocate(size * 0.0212766, size * 0.0212766);
 
+
             //
-            rotate.setPivotX(indicator.getX() - size * 0.5);
-            rotate.setPivotY(indicator.getHeight() * 0.5);
+            rotate.setPivotX(-size * 0.37);
+            rotate.setPivotY(0);
 
             indicator.setWidth(size * 0.1);
             indicator.setHeight(size * 0.01587302);
-            indicator.relocate(size * 0.9, size * 0.5);
+            indicator.relocate(size * 0.87, size * 0.5);
             //
 
             //
