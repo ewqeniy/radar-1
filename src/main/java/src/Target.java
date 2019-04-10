@@ -20,37 +20,51 @@ public class Target {
     double xStart;
     double yStart;
 
-    public Target(int angle, Rectangle target, double radius, double size) {
+    public Target(int angle, Rectangle target, double center, double distance, double size) {
         this.angle = angle;
         this.target = target;
-        this.radius = radius;
+        this.radius = center;
         this.size = size;
         sin = Math.sin(gradusToRodian(angle));
         cos = Math.cos(gradusToRodian(angle));
-        xStart = radius + radius * cos;
-        yStart = radius + radius * sin;
+        xStart = center + distance * cos;
+        yStart = center + distance * sin;
+        System.out.println(";;;;;;;"+angle+";;;;;;;;;;;;;;;");
+        System.out.println(";;;;;;;"+distance+";;;;;;;;;;;;;;;");
         movingMode = new Random().nextInt(2);
-        Executors.newFixedThreadPool(1).submit(this::startTarget);
+        redrawTarget();
     }
 
-    private void startTarget() {
-
-
-        try {
-            Thread.sleep(1000);
-
-        for (int i = 0; i < 100; i++) {
-                if ( angle >= 0 && angle <= 90 ) { signX = -1; signY = -1; }
-                if ( angle > 90 && angle <= 180 ) { signX = +1; signY = -1; }
-                if ( angle > 180 && angle <= 270 ) { signX = +1; signY = +1; }
-                if ( angle > 270 && angle < 360 ) { signX = -1; signY = +1; }
-                redrawTarget();
+    public void startTarget() {
+        Executors.newFixedThreadPool(1).submit(() -> {
+            try {
                 Thread.sleep(1000);
-        }
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+                for (int i = 0; i < 100; i++) {
+                    if (angle >= 0 && angle <= 90) {
+                        signX = -1;
+                        signY = -1;
+                    }
+                    if (angle > 90 && angle <= 180) {
+                        signX = +1;
+                        signY = -1;
+                    }
+                    if (angle > 180 && angle <= 270) {
+                        signX = +1;
+                        signY = +1;
+                    }
+                    if (angle > 270 && angle < 360) {
+                        signX = -1;
+                        signY = +1;
+                    }
+                    redrawTarget();
+                    Thread.sleep(1000);
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void redrawTarget() {
