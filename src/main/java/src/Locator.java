@@ -70,7 +70,7 @@ public class Locator extends Region {
     // ******************** Initialization ************************************
     private void initGraphics() {
 
-        getStyleClass().add("angle-picker");
+//        getStyleClass().add("angle-picker");
 
         rotate.setAngle(0);
         rotateTop.setAngle(topAngle);
@@ -116,7 +116,14 @@ public class Locator extends Region {
 
     public void onKpClicked() {
         int angle = new Random().nextInt(360);
-        targets.add(new Target(angle, targetsRect.get(currentTargetIdx++), radius, size));
+        Target newTarget = addNewTarget(angle, radius);
+        newTarget.startTarget();
+    }
+
+    public Target addNewTarget(int angle, double distance) {
+        Target newTarget = new Target(angle, targetsRect.get(currentTargetIdx++), radius, distance, size);
+        targets.add(newTarget);
+        return newTarget;
     }
 
     public void onAutoClicked() {

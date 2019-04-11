@@ -24,6 +24,7 @@ public class Demo extends Application {
     private Label ruLable = new Label("      РУ");
 
 
+    private BottomTable bottomTable = new BottomTable(locatorPanel::addNewTarget);
 
     public Demo() throws Exception {
     }
@@ -34,8 +35,10 @@ public class Demo extends Application {
         autoBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onAutoClicked(); });
         scBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onScClicked(); });
         ruBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onRuClicked(); });
-        locatorPanel.setPrefSize(500, 500);
+        locatorPanel.setPrefSize(400, 400);
         controllerPanel.setPrefSize(150, 150);
+        bottomTable.setPrefSize(500, 150);
+
         BorderPane.setMargin(controllerPanel, new Insets(500, 0, 0, 0));
     }
 
@@ -60,14 +63,16 @@ public class Demo extends Application {
         BorderPane pane = new BorderPane();
         pane.setCenter(locatorPanel);
         pane.setRight(getRightPane());
+        pane.setBottom(bottomTable);
 
         pane.setBackground(new Background(new BackgroundFill(Color.web("#BEC85D"), CornerRadii.EMPTY, Insets.EMPTY)));
         pane.setPadding(new Insets(30));
 
         Scene scene = new Scene(pane, 1300, 1000);
-
+        scene.getStylesheets().add(getClass().getResource("btn.css").toExternalForm());
         stage.setScene(scene);
-        stage.setResizable(false);
+        //TODO check on computers in university and thinking about correct way
+//        stage.setResizable(false);
         stage.show();
     }
 
