@@ -39,6 +39,8 @@ public class Locator extends Region {
     private Rotate rotateTop = new Rotate();
     private Rotate rotateBottom = new Rotate();
     private double _angle = 0.0;
+    private double tempAngle = 0;
+    private double speed = 0.15;
     private Paint _backgroundPaint;
     private Paint _foregroundPaint;
     private Paint _indicatorPaint;
@@ -60,7 +62,9 @@ public class Locator extends Region {
                 new Stop(0.0, Color.rgb(112, 242, 255)),
                 new Stop(1.0, Color.rgb(42, 42, 42)));
         _indicatorPaint = Color.rgb(15, 114, 0);
-        for (int i = 0; i < 6; i++) { targetsRect.add(new Rectangle()); }
+        for (int i = 0; i < 6; i++) {
+            targetsRect.add(new Rectangle());
+        }
 
         initGraphics();
         registerListeners();
@@ -108,7 +112,9 @@ public class Locator extends Region {
 
 
     public void setAngle(final Double angle) {
-        _angle = angle % 360.0;
+        int sign = tempAngle <= angle ? 1 : -1;
+        tempAngle = angle;
+        _angle += sign * speed;
         rotate.setAngle(_angle);
         rotateTop.setAngle(_angle + topAngle);
         rotateBottom.setAngle(_angle + bottomAngle);
@@ -128,33 +134,33 @@ public class Locator extends Region {
 
     public void onAutoClicked() {
 
-            if (scTurnOn) {
-                Target target = targets.get(0);
-                Executors.newFixedThreadPool(1).submit(() -> {
-                    try {
-                        if (_angle - 30 <= target.angle && target.angle <= _angle + 30) {
-                            if (target.angle >= _angle - 30 && target.angle <= _angle) {
-                                double diffAngle = Math.abs(_angle - target.angle);
-                                for (int i = 0; i < 10; i++) {
-                                    Thread.sleep(400);
-                                    setAngle(_angle - diffAngle / 10);
-                                }
-                                setAngle(target.angle);
+        if (scTurnOn) {
+            Target target = targets.get(0);
+            Executors.newFixedThreadPool(1).submit(() -> {
+                try {
+                    if (_angle - 30 <= target.angle && target.angle <= _angle + 30) {
+                        if (target.angle >= _angle - 30 && target.angle <= _angle) {
+                            double diffAngle = Math.abs(_angle - target.angle);
+                            for (int i = 0; i < 10; i++) {
+                                Thread.sleep(400);
+                                setAngle(_angle - diffAngle / 10);
                             }
-                            if (target.angle <= _angle + 30 && target.angle >= _angle) {
-                                double diffAngle = Math.abs(target.angle - _angle);
-                                for (int i = 0; i < 10; i++) {
-                                    Thread.sleep(400);
-                                    setAngle(_angle + diffAngle / 10);
-                                }
-                                setAngle(target.angle);
-                            }
+                            setAngle(target.angle);
                         }
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
+                        if (target.angle <= _angle + 30 && target.angle >= _angle) {
+                            double diffAngle = Math.abs(target.angle - _angle);
+                            for (int i = 0; i < 10; i++) {
+                                Thread.sleep(400);
+                                setAngle(_angle + diffAngle / 10);
+                            }
+                            setAngle(target.angle);
+                        }
                     }
-                });
-            }
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        }
 
     }
 
