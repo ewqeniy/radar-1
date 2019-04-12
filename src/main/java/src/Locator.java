@@ -26,6 +26,7 @@ public class Locator extends Region {
     private double radius;
     private double width;
     private double height;
+    private double tempAngle = 0;
     private Circle background = new Circle();
     private Circle foreground = new Circle();
     private Rectangle indicator = new Rectangle();
@@ -108,7 +109,14 @@ public class Locator extends Region {
 
 
     public void setAngle(final Double angle) {
-        _angle = angle % 360.0;
+        if(tempAngle<=angle) {
+            tempAngle=angle;
+            _angle = _angle + 0.2;
+        }
+        else {
+            tempAngle=angle;
+            _angle = _angle - 0.2;
+        }
         rotate.setAngle(_angle);
         rotateTop.setAngle(_angle + topAngle);
         rotateBottom.setAngle(_angle + bottomAngle);
