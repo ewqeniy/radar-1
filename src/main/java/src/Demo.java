@@ -31,7 +31,7 @@ public class Demo extends Application {
 
     @Override
     public void init() {
-        kpBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onKpClicked(); });
+//        kpBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onKpClicked(); });
         autoBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onAutoClicked(); });
         scBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onScClicked(); });
         ruBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onRuClicked(); });
@@ -92,7 +92,8 @@ public class Demo extends Application {
         BorderPane bottomRightPane = new BorderPane();
         bottomRightPane.setBottom(ruLable);
         bottomRightPane.setTop(ruBtn);
-        bottomPane.setLeft(scBtn); bottomPane.setRight(bottomRightPane);
+//        bottomPane.setLeft(scBtn);
+        bottomPane.setRight(bottomRightPane);
 
         BorderPane paneForReturn = new BorderPane();
         paneForReturn.setTop(topPane);

@@ -21,18 +21,27 @@ public class Target {
     double yStart;
 
     public Target(int angle, Rectangle target, double center, double distance, double size) {
+        angle = -angle;
         this.angle = angle;
         this.target = target;
         this.radius = center;
-        this.size = size;
+        this.size = size * 0.95;
         sin = Math.sin(gradusToRodian(angle));
         cos = Math.cos(gradusToRodian(angle));
-        xStart = center + distance * cos;
-        yStart = center + distance * sin;
+        System.out.println("------------------------------");
+        System.out.println(center);
+        System.out.println(size);
+        System.out.println("------------------------------");
+        xStart = radius + distance * cos;
+        yStart = radius + distance * sin;
         System.out.println(";;;;;;;"+angle+";;;;;;;;;;;;;;;");
         System.out.println(";;;;;;;"+distance+";;;;;;;;;;;;;;;");
         movingMode = new Random().nextInt(2);
-        redrawTarget();
+        System.out.println("+++++++++++++++++++++++");
+        System.out.println(movingMode);
+        System.out.println("+++++++++++++++++++++++");
+//        redrawTarget();
+        startTarget();
     }
 
     public void startTarget() {
@@ -41,24 +50,29 @@ public class Target {
                 Thread.sleep(1000);
 
                 for (int i = 0; i < 100; i++) {
-                    if (angle >= 0 && angle <= 90) {
+                    if (angle <= -0 && angle >= -90) {
                         signX = -1;
-                        signY = -1;
+                        signY = +1;
                     }
-                    if (angle > 90 && angle <= 180) {
-                        signX = +1;
-                        signY = -1;
-                    }
-                    if (angle > 180 && angle <= 270) {
+                    if (angle < -90 && angle >= -180) {
                         signX = +1;
                         signY = +1;
                     }
-                    if (angle > 270 && angle < 360) {
+                    if (angle < -180 && angle >= -270) {
+                        signX = +1;
+                        signY = -1;
+                    }
+                    if (angle < -270 && angle > -360) {
                         signX = -1;
-                        signY = +1;
+                        signY = -1;
                     }
                     redrawTarget();
                     Thread.sleep(1000);
+                    if((x>radius-radius*0.1 && x<radius+radius*0.1 && y<radius+radius*0.1 && y>radius-radius*0.1)
+                    || x<radius-radius*0.95 || x>radius+radius*0.95 || y<radius-radius*0.95 || y>radius+radius*0.95 ) {
+                        target.setVisible(false);
+                        return;
+                    }
                 }
 
             } catch (InterruptedException e) {
@@ -76,16 +90,16 @@ public class Target {
 
         System.out.println("1:::::" + x + "     "+ y);
 
-        if (movingMode == 0) {
+        if (movingMode == 0) { // перемещаемся к центру
             double oldX = x;
-            if (angle == 270) { x = oldX; y += 5; } else
-                if (angle == 90) { x = oldX; y -= 5; } else
+            if (angle == 270) { y += 5; } else
+                if (angle == 90) { y -= 5; } else
                     { x += 5 * signX; y = (((x - radius) * (y - radius)) / (oldX - radius)) + radius; }
-        } else {
-            if ( angle >= 0 && angle <= 90 ) { x -= 5; y = size * 0.75; }
-            if ( angle > 90 && angle <= 180 ) { x = size * 0.25; y -= 5; }
-            if ( angle > 180 && angle <= 270 ) { x += 5; y = size * 0.25; }
-            if ( angle > 270 && angle < 360 ) { x = size * 0.75; y += 5; }
+        } else { // перемещаемся вдоль
+            if ( angle <= -0 && angle >= -90 ) { y += 5; }
+            if ( angle < -90 && angle >= -180 ) { x += 5; }
+            if ( angle < -180 && angle >= -270 ) { y -= 5; }
+            if ( angle < -270 && angle > -360 ) { x -= 5; }
         }
 
 

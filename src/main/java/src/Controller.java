@@ -141,7 +141,6 @@ public class Controller extends Region {
             indicator.setHeight(size * 0.01587302);
             indicator.relocate(size * 0.87, size * 0.5);
             //
-
             redraw();
         }
     }

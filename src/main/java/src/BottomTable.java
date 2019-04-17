@@ -100,9 +100,12 @@ public class BottomTable extends Region {
             int i = scBtns.indexOf(btn1);
             int angle = Integer.valueOf(firstInputs.get(i).getText());
             double distance = Double.valueOf(secondInputs.get(i).getText());
+
 //            System.out.println(angle);
 //            System.out.println(distance);
-            addTargetFunc.apply(angle, distance);
+            if(distance>0 && distance<100 && angle >= 0 && angle < 360) {
+                addTargetFunc.apply(angle, distance);
+            }
         });
 //        textField1.textProperty().addListener((obs, oldText, newText) -> {
 //            System.out.println(newText);

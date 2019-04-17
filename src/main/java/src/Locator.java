@@ -47,6 +47,12 @@ public class Locator extends Region {
     private InnerShadow innerShadow;
     private int currentTargetIdx = 0;
 
+    // Center
+    private Rectangle centerHorRect = new Rectangle();
+    private Rectangle centerVerRect = new Rectangle();
+
+
+
 
     private int topAngle = 52;
     private int bottomAngle = 360 - topAngle;
@@ -100,7 +106,7 @@ public class Locator extends Region {
         indicatorBottom.getTransforms().add(rotateBottom);
         indicatorBottom.setMouseTransparent(true);
 
-        pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect);
+        pane = new Pane(background, foreground, indicator, indicatorTop, indicatorBottom, upperRect, centerHorRect, centerVerRect);
         pane.getChildren().addAll(targetsRect);
         getChildren().setAll(pane);
     }
@@ -127,6 +133,8 @@ public class Locator extends Region {
     }
 
     public Target addNewTarget(int angle, double distance) {
+        double halfSize = size * 0.5;
+        distance = halfSize * distance * 0.01;
         Target newTarget = new Target(angle, targetsRect.get(currentTargetIdx++), radius, distance, size);
         targets.add(newTarget);
         return newTarget;
@@ -228,6 +236,13 @@ public class Locator extends Region {
             upperRect.setWidth(size * 0.01);
             upperRect.setHeight(size * 0.1);
             upperRect.relocate(size * 0.5, size * 0.02);
+
+            //Center
+            double w2 = size*0.06, w1 = size*0.01;
+            centerHorRect.setWidth(w2); centerHorRect.setHeight(w1);
+            centerHorRect.relocate(size * 0.5 - w2*0.5, size * 0.5 - w1*0.5);
+            centerVerRect.setWidth(w1); centerVerRect.setHeight(w2);
+            centerVerRect.relocate(size * 0.5 - w1*0.5, size * 0.5 - w2*0.5);
 
             redraw();
         }
