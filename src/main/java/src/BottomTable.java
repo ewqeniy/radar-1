@@ -38,11 +38,14 @@ public class BottomTable extends Region {
     private AddTarget addTargetFunc;
     private int height = 6 * (rawHeight + startedOffset);
 
+    private Locator locator;
+
 
     // ******************** Constructors **************************************
-    public BottomTable(AddTarget addTargetFunc) {
+    public BottomTable(Locator locator) {
+        this.locator = locator;
         Rectangle rect1 = new Rectangle(500, height);
-        this.addTargetFunc = addTargetFunc;
+        this.addTargetFunc = locator::addNewTarget;
         scrollPane = new ScrollPane(pane);
         scrollPane.setMaxSize(500, 150);
 
@@ -104,8 +107,16 @@ public class BottomTable extends Region {
 //            System.out.println(angle);
 //            System.out.println(distance);
             if(distance>0 && distance<100 && angle >= 0 && angle < 360) {
-                addTargetFunc.apply(angle, distance);
+                addTargetFunc.apply(angle + 90, distance);
             }
+        });
+
+        btn2.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
+            int i = kpBtns.indexOf(btn2);
+            int angle = Integer.valueOf(firstInputs.get(i).getText());
+            double distance = Double.valueOf(secondInputs.get(i).getText());
+
+            locator.onAutoBtnClicked();
         });
 //        textField1.textProperty().addListener((obs, oldText, newText) -> {
 //            System.out.println(newText);

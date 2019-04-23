@@ -24,7 +24,7 @@ public class Demo extends Application {
     private Label ruLable = new Label("      РУ");
 
 
-    private BottomTable bottomTable = new BottomTable(locatorPanel::addNewTarget);
+    private BottomTable bottomTable = new BottomTable(locatorPanel);
 
     public Demo() throws Exception {
     }
@@ -32,9 +32,9 @@ public class Demo extends Application {
     @Override
     public void init() {
 //        kpBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onKpClicked(); });
-        autoBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onAutoClicked(); });
-        scBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onScClicked(); });
-        ruBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onRuClicked(); });
+//        autoBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onAutoClicked(); });
+//        scBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onScClicked(); });
+//        ruBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onRuClicked(); });
         locatorPanel.setPrefSize(400, 400);
         controllerPanel.setPrefSize(150, 150);
         bottomTable.setPrefSize(500, 150);

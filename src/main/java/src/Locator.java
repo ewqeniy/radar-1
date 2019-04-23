@@ -172,12 +172,54 @@ public class Locator extends Region {
 
     }
 
+    public void onAutoBtnClicked() {
+        Target target = targets.get(0);
+        double minAngle = 500;
+        for (Target el : targets) {
+            double targetAngle = AngleUtils.getAngleFromXY(el.x, el.y, radius, radius, 0);
+            double diff = Math.abs(targetAngle - _angle);
+
+            System.out.println("====================================");
+            System.out.println("====================================");
+            System.out.println("TARGET: " + targetAngle);
+            System.out.println("ANGLE: " + _angle);
+            System.out.println("DIFF: " + diff);
+            System.out.println("====================================");
+            System.out.println("====================================");
+
+            if (diff < minAngle) {
+                target = el;
+            }
+        }
+
+        final Target targetFinal = target;
+
+        Executors.newFixedThreadPool(1).submit(() -> {
+            try {
+                for (int i = 0; i < 100; i++) {
+                    Thread.sleep(500);
+                    double angl = AngleUtils.getAngleFromXY(targetFinal.x, targetFinal.y, radius, radius, 0);
+                    double diff = Math.abs(angl - _angle);
+                    if(_angle < angl) {
+                        _angle += diff / 100;
+                    } else {
+                        _angle -= diff / 100;
+                    }
+                    setAngle(_angle);
+
+                }
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
 
     public void onScClicked() {
         scTurnOn = true;
     }
-
-
     public void onRuClicked() {
 
     }
@@ -188,8 +230,6 @@ public class Locator extends Region {
         height = getHeight() - getInsets().getTop() - getInsets().getBottom();
         size = width < height ? width : height;
         radius = size * 0.5;
-
-        System.out.println("============ RESIZE ============");
 
         if (width > 0 && height > 0) {
             pane.setMaxSize(size, size);

@@ -48,7 +48,7 @@ public class Controller extends Region {
         mouseFilter = evt -> {
             EventType<? extends MouseEvent> type = evt.getEventType();
             if (type.equals(MouseEvent.MOUSE_DRAGGED)) {
-                double tmpAngle = getAngleFromXY(evt.getX() + size * 0.5, evt.getY() + size * 0.5, size * 0.5, size * 0.5, 0);
+                double tmpAngle = AngleUtils.getAngleFromXY(evt.getX() + size * 0.5, evt.getY() + size * 0.5, size * 0.5, size * 0.5, 0);
                 setAngle(tmpAngle);
             }
         };
@@ -94,20 +94,6 @@ public class Controller extends Region {
         _angle = angle % 360.0;
         rotate.setAngle(_angle);
         setAngle.accept(_angle);
-    }
-
-    private double getAngleFromXY(final double x, final double y, final double centerX, final double centerY, final double angleOffset) {
-        // For ANGLE_OFFSET =  0 -> Angle of 0 is at 3 o'clock
-        // For ANGLE_OFFSET = 90  ->Angle of 0 is at 12 o'clock
-        double deltaX = x - centerX;
-        double deltaY = y - centerY;
-        double radius = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
-        double nx     = deltaX / radius;
-        double ny     = deltaY / radius;
-        double theta  = Math.atan2(ny, nx);
-        theta         = Double.compare(theta, 0.0) >= 0 ? Math.toDegrees(theta) : Math.toDegrees((theta)) + 360.0;
-        double angle  = (theta + angleOffset) % 360;
-        return angle;
     }
 
 

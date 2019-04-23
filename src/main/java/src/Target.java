@@ -7,8 +7,8 @@ import java.util.concurrent.Executors;
 
 public class Target {
     public double angle = 0;
-    private double x = 0;
-    private double y = 0;
+    public double x = 0;
+    public double y = 0;
     private double sin = 0;
     private double cos = 0;
     private int signX = 1;
@@ -26,21 +26,12 @@ public class Target {
         this.target = target;
         this.radius = center;
         this.size = size * 0.95;
-        sin = Math.sin(gradusToRodian(angle));
-        cos = Math.cos(gradusToRodian(angle));
-        System.out.println("------------------------------");
-        System.out.println(center);
-        System.out.println(size);
-        System.out.println("------------------------------");
+        sin = Math.sin(AngleUtils.gradusToRodian(angle));
+        cos = Math.cos(AngleUtils.gradusToRodian(angle));
         xStart = radius + distance * cos;
         yStart = radius + distance * sin;
-        System.out.println(";;;;;;;"+angle+";;;;;;;;;;;;;;;");
-        System.out.println(";;;;;;;"+distance+";;;;;;;;;;;;;;;");
         movingMode = new Random().nextInt(2);
-        System.out.println("+++++++++++++++++++++++");
-        System.out.println(movingMode);
-        System.out.println("+++++++++++++++++++++++");
-//        redrawTarget();
+        //redrawTarget();
         startTarget();
     }
 
@@ -69,7 +60,7 @@ public class Target {
                     redrawTarget();
                     Thread.sleep(1000);
                     if((x>radius-radius*0.1 && x<radius+radius*0.1 && y<radius+radius*0.1 && y>radius-radius*0.1)
-                    || x<radius-radius*0.95 || x>radius+radius*0.95 || y<radius-radius*0.95 || y>radius+radius*0.95 ) {
+                    || AngleUtils.getDistance(x, y, radius) >= radius*0.93) {
                         target.setVisible(false);
                         return;
                     }
@@ -109,8 +100,6 @@ public class Target {
         target.setHeight(size * 0.03);
     }
 
-    private double gradusToRodian(double gradus) {
-        return gradus * (3.14 / 180);
-    }
+
 
 }
