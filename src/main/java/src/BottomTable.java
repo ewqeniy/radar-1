@@ -4,7 +4,6 @@ import javafx.beans.DefaultProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -12,7 +11,6 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 @DefaultProperty("children")
 public class BottomTable extends Region {
@@ -50,7 +48,7 @@ public class BottomTable extends Region {
         scrollPane.setMaxSize(500, 150);
 
         ///////////////////////////////////////////////////////////////////////////////////
-        test = new Button("BTN");
+        test = new Button(" + ");
         test.getStyleClass().add("btn-test");
 
         test.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {
@@ -78,7 +76,7 @@ public class BottomTable extends Region {
         textField1.setMaxSize(fieldW, rawHeight);
         TextField textField2 = new TextField();
         textField2.setMaxSize(fieldW, rawHeight);
-        Button btn1 = new Button("СЦ");
+        Button btn1 = new Button("КП");
         btn1.setPrefSize(btnW, rawHeight);
         Button btn2 = new Button("АВТО");
         btn2.setPrefSize(btnW, rawHeight);
@@ -107,8 +105,12 @@ public class BottomTable extends Region {
 //            System.out.println(angle);
 //            System.out.println(distance);
             if(distance>0 && distance<100 && angle >= 0 && angle < 360) {
-                addTargetFunc.apply(angle + 90, distance);
+                addTargetFunc.apply(angle, distance);
             }
+
+            scBtns.get(i).setDisable(true);
+            firstInputs.get(i).setDisable(true);
+            secondInputs.get(i).setDisable(true);
         });
 
         btn2.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> {

@@ -16,7 +16,6 @@ import javafx.scene.transform.Rotate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 
 
@@ -50,6 +49,8 @@ public class Locator extends Region {
     // Center
     private Rectangle centerHorRect = new Rectangle();
     private Rectangle centerVerRect = new Rectangle();
+
+    private Target targetForMoving;
 
 
 
@@ -127,9 +128,11 @@ public class Locator extends Region {
     }
 
     public void onKpClicked() {
-        int angle = new Random().nextInt(360);
-        Target newTarget = addNewTarget(angle, radius);
-        newTarget.startTarget();
+//        int angle = new Random().nextInt(360);
+//        Target newTarget = addNewTarget(angle, radius);
+//        newTarget.startTarget();
+        targetForMoving.startTarget();
+        onAutoBtnClicked(targetForMoving);
     }
 
     public Target addNewTarget(int angle, double distance) {
@@ -137,6 +140,7 @@ public class Locator extends Region {
         distance = halfSize * distance * 0.01;
         Target newTarget = new Target(angle, targetsRect.get(currentTargetIdx++), radius, distance, size);
         targets.add(newTarget);
+        targetForMoving = newTarget;
         return newTarget;
     }
 
@@ -172,12 +176,18 @@ public class Locator extends Region {
 
     }
 
-    public void onAutoBtnClicked() {
+
+    public void onAutoBtnClicked() {}
+    public void onAutoBtnClicked(Target targetForMoving) {
         Target target = targets.get(0);
+        target = targetForMoving;
+
         double minAngle = 500;
+        double diff = minAngle;
+
         for (Target el : targets) {
             double targetAngle = AngleUtils.getAngleFromXY(el.x, el.y, radius, radius, 0);
-            double diff = Math.abs(targetAngle - _angle);
+            diff = Math.abs(targetAngle - _angle);
 
             System.out.println("====================================");
             System.out.println("====================================");
@@ -189,23 +199,36 @@ public class Locator extends Region {
 
             if (diff < minAngle) {
                 target = el;
+                minAngle = diff;
             }
         }
 
         final Target targetFinal = target;
+        int count = diff < 100 ? 10 : 20;
 
         Executors.newFixedThreadPool(1).submit(() -> {
             try {
                 for (int i = 0; i < 100; i++) {
-                    Thread.sleep(500);
-                    double angl = AngleUtils.getAngleFromXY(targetFinal.x, targetFinal.y, radius, radius, 0);
-                    double diff = Math.abs(angl - _angle);
-                    if(_angle < angl) {
-                        _angle += diff / 100;
+                    Thread.sleep(100);
+                    double angl = targetFinal.movingMode == 0 ? targetFinal.angle :
+                        AngleUtils.getAngleFromXY(targetFinal.x, targetFinal.y, radius, radius, 0);
+                    double currentDiff = Math.abs(angl - _angle);
+                    if(angl -_angle > 0 && angl - _angle <= 180) {
+                        _angle += currentDiff / count;
                     } else {
-                        _angle -= diff / 100;
+                        _angle -= currentDiff / count;
                     }
                     setAngle(_angle);
+
+                    System.out.println("====================================");
+                    System.out.println("====================================");
+                    System.out.println("TARGET ANGLE: " + angl);
+                    System.out.println("ANGLE: " + _angle);
+                    System.out.println("DIFF: " + currentDiff);
+//                    System.out.println("TARGET ANGLE: " + (360 - angl));
+//                    System.out.println("ANGLE: " + _angle);
+                    System.out.println("====================================");
+                    System.out.println("====================================");
 
                 }
 

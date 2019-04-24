@@ -16,7 +16,7 @@ public class Target {
     private Rectangle target;
     private double radius;
     private double size;
-    private double movingMode = 0;
+    public double movingMode = 0;
     double xStart;
     double yStart;
 
@@ -31,8 +31,8 @@ public class Target {
         xStart = radius + distance * cos;
         yStart = radius + distance * sin;
         movingMode = new Random().nextInt(2);
-        //redrawTarget();
-        startTarget();
+        redrawTarget();
+//        startTarget();
     }
 
     public void startTarget() {

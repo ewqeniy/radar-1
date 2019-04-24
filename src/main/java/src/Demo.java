@@ -31,7 +31,7 @@ public class Demo extends Application {
 
     @Override
     public void init() {
-//        kpBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onKpClicked(); });
+        kpBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onKpClicked(); });
 //        autoBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onAutoClicked(); });
 //        scBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onScClicked(); });
 //        ruBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseEvent -> { locatorPanel.onRuClicked(); });
